@@ -6,6 +6,11 @@ use cw20::{Cw20Coin, Logo, MinterResponse};
 pub use cw20::Cw20ExecuteMsg as ExecuteMsg;
 
 #[derive(Serialize, Deserialize, JsonSchema, Debug, Clone, PartialEq)]
+pub struct MigrateMessage {
+    pub description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema, Debug, Clone, PartialEq)]
 pub struct InstantiateMarketingInfo {
     pub project: Option<String>,
     pub description: Option<String>,
