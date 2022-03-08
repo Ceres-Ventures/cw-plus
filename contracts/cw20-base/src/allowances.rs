@@ -1,7 +1,8 @@
 use cosmwasm_std::{
-    attr, Addr, Binary, BlockInfo, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    Addr, attr, Binary, BlockInfo, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
     Storage, Uint128,
 };
+
 use cw20::{AllowanceResponse, Cw20ReceiveMsg, Expiration};
 
 use crate::error::ContractError;
@@ -147,7 +148,6 @@ pub fn execute_transfer_from(
 
 pub fn execute_burn_from(
     deps: DepsMut,
-
     env: Env,
     info: MessageInfo,
     owner: String,
@@ -224,7 +224,7 @@ pub fn execute_send_from(
         amount,
         msg,
     }
-    .into_cosmos_msg(contract)?;
+        .into_cosmos_msg(contract)?;
 
     let res = Response::new().add_message(msg).add_attributes(attrs);
     Ok(res)
@@ -241,14 +241,15 @@ pub fn query_allowance(deps: Deps, owner: String, spender: String) -> StdResult<
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coins, CosmosMsg, SubMsg, Timestamp, WasmMsg};
+    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+
     use cw20::{Cw20Coin, TokenInfoResponse};
 
     use crate::contract::{execute, instantiate, query_balance, query_token_info};
     use crate::msg::{ExecuteMsg, InstantiateMsg};
+
+    use super::*;
 
     fn get_balance<T: Into<String>>(deps: Deps, address: T) -> Uint128 {
         query_balance(deps, address.into()).unwrap().balance
@@ -307,7 +308,7 @@ mod tests {
             allowance,
             AllowanceResponse {
                 allowance: allow1,
-                expires
+                expires,
             }
         );
 
@@ -325,7 +326,7 @@ mod tests {
             allowance,
             AllowanceResponse {
                 allowance: allow2,
-                expires
+                expires,
             }
         );
 
@@ -344,7 +345,7 @@ mod tests {
             allowance,
             AllowanceResponse {
                 allowance: allow3,
-                expires: new_expire
+                expires: new_expire,
             }
         );
 
@@ -681,8 +682,8 @@ mod tests {
             amount: transfer,
             msg: send_msg.clone(),
         }
-        .into_binary()
-        .unwrap();
+            .into_binary()
+            .unwrap();
         assert_eq!(
             res.messages[0],
             SubMsg::new(CosmosMsg::Wasm(WasmMsg::Execute {

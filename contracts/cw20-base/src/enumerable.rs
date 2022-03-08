@@ -1,8 +1,9 @@
 use cosmwasm_std::{Deps, Order, StdResult};
+
 use cw20::{AllAccountsResponse, AllAllowancesResponse, AllowanceInfo};
+use cw_storage_plus::Bound;
 
 use crate::state::{ALLOWANCES, BALANCES};
-use cw_storage_plus::Bound;
 
 // settings for pagination
 const MAX_LIMIT: u32 = 30;
@@ -57,14 +58,15 @@ pub fn query_all_accounts(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coins, DepsMut, Uint128};
+    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+
     use cw20::{Cw20Coin, Expiration, TokenInfoResponse};
 
     use crate::contract::{execute, instantiate, query_token_info};
     use crate::msg::{ExecuteMsg, InstantiateMsg};
+
+    use super::*;
 
     // this will set up the instantiation for other tests
     fn do_instantiate(mut deps: DepsMut, addr: &str, amount: Uint128) -> TokenInfoResponse {
@@ -140,7 +142,7 @@ mod tests {
             Some(allow.spender.clone()),
             Some(10000),
         )
-        .unwrap();
+            .unwrap();
         assert_eq!(allowances.allowances.len(), 1);
         let allow = &allowances.allowances[0];
         assert_eq!(&allow.spender, &spender2);
@@ -173,7 +175,7 @@ mod tests {
                 amount: Uint128::new(222222),
             },
         )
-        .unwrap();
+            .unwrap();
         execute(
             deps.as_mut(),
             env.clone(),
@@ -183,7 +185,7 @@ mod tests {
                 amount: Uint128::new(333333),
             },
         )
-        .unwrap();
+            .unwrap();
         execute(
             deps.as_mut(),
             env,
@@ -193,7 +195,7 @@ mod tests {
                 amount: Uint128::new(444444),
             },
         )
-        .unwrap();
+            .unwrap();
 
         // make sure we get the proper results
         let accounts = query_all_accounts(deps.as_ref(), None, None).unwrap();

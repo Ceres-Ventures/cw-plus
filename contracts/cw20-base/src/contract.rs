@@ -1,14 +1,14 @@
+use cosmwasm_std::{
+    Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult, to_binary, Uint128,
+};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{
-    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult, Uint128,
-};
 
-use cw2::set_contract_version;
 use cw20::{
     BalanceResponse, Cw20Coin, Cw20ReceiveMsg, DownloadLogoResponse, EmbeddedLogo, Logo, LogoInfo,
     MarketingInfoResponse, MinterResponse, TokenInfoResponse,
 };
+use cw2::set_contract_version;
 
 use crate::allowances::{
     execute_burn_from, execute_decrease_allowance, execute_increase_allowance, execute_send_from,
@@ -17,10 +17,10 @@ use crate::allowances::{
 use crate::enumerable::{query_all_accounts, query_all_allowances};
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{MinterData, TokenInfo, BALANCES, LOGO, MARKETING_INFO, TOKEN_INFO};
+use crate::state::{BALANCES, LOGO, MARKETING_INFO, MinterData, TOKEN_INFO, TokenInfo};
 
 // version info for migration info
-const CONTRACT_NAME: &str = "crates.io:cw20-base";
+const CONTRACT_NAME: &str = "ceres.ventures:cw20-base";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 const LOGO_SIZE_CAP: usize = 5 * 1024;
@@ -178,7 +178,7 @@ pub fn execute(
             amount,
             msg,
         } => execute_send(deps, env, info, contract, amount, msg),
-        ExecuteMsg::Mint { recipient, amount } => execute_mint(deps, env, info, recipient, amount),
+        //ExecuteMsg::Mint { recipient, amount } => execute_mint(deps, env, info, recipient, amount),
         ExecuteMsg::IncreaseAllowance {
             spender,
             amount,
@@ -354,7 +354,7 @@ pub fn execute_send(
                 amount,
                 msg,
             }
-            .into_cosmos_msg(contract)?,
+                .into_cosmos_msg(contract)?,
         );
     Ok(res)
 }
@@ -521,16 +521,18 @@ pub fn query_download_logo(deps: Deps) -> StdResult<DownloadLogoResponse> {
 
 #[cfg(test)]
 mod tests {
+    use cosmwasm_std::{Addr, coins, CosmosMsg, from_binary, StdError, SubMsg, WasmMsg};
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coins, from_binary, Addr, CosmosMsg, StdError, SubMsg, WasmMsg};
+
+    use crate::msg::InstantiateMarketingInfo;
 
     use super::*;
-    use crate::msg::InstantiateMarketingInfo;
 
     fn get_balance<T: Into<String>>(deps: Deps, address: T) -> Uint128 {
         query_balance(deps, address.into()).unwrap().balance
     }
 
+    /*
     // this will set up the instantiation for other tests
     fn do_instantiate_with_minter(
         deps: DepsMut,
@@ -549,7 +551,7 @@ mod tests {
             }),
         )
     }
-
+    */
     // this will set up the instantiation for other tests
     fn do_instantiate(deps: DepsMut, addr: &str, amount: Uint128) -> TokenInfoResponse {
         _do_instantiate(deps, addr, amount, None)
@@ -589,7 +591,7 @@ mod tests {
             }
         );
         assert_eq!(get_balance(deps.as_ref(), addr), amount);
-        assert_eq!(query_minter(deps.as_ref()).unwrap(), mint,);
+        assert_eq!(query_minter(deps.as_ref()).unwrap(), mint, );
         meta
     }
 
@@ -783,6 +785,7 @@ mod tests {
         }
     }
 
+    /*
     #[test]
     fn can_mint_by_minter() {
         let mut deps = mock_dependencies(&[]);
@@ -865,6 +868,7 @@ mod tests {
         let err = execute(deps.as_mut(), env, info, msg).unwrap_err();
         assert_eq!(err, ContractError::Unauthorized {});
     }
+    */
 
     #[test]
     fn instantiate_multiple_accounts() {
@@ -928,7 +932,7 @@ mod tests {
             env.clone(),
             QueryMsg::Balance { address: addr1 },
         )
-        .unwrap();
+            .unwrap();
         let loaded: BalanceResponse = from_binary(&data).unwrap();
         assert_eq!(loaded.balance, amount1);
 
@@ -940,7 +944,7 @@ mod tests {
                 address: String::from("addr0002"),
             },
         )
-        .unwrap();
+            .unwrap();
         let loaded: BalanceResponse = from_binary(&data).unwrap();
         assert_eq!(loaded.balance, Uint128::zero());
     }
@@ -1106,8 +1110,8 @@ mod tests {
             amount: transfer,
             msg: send_msg,
         }
-        .into_binary()
-        .unwrap();
+            .into_binary()
+            .unwrap();
         // and this is how it must be wrapped for the vm to process it
         assert_eq!(
             res.messages[0],
@@ -1162,7 +1166,7 @@ mod tests {
                     marketing: Some("creator".to_owned()),
                 },
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert_eq!(err, ContractError::Unauthorized {});
 
@@ -1216,7 +1220,7 @@ mod tests {
                     marketing: None,
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1269,7 +1273,7 @@ mod tests {
                     marketing: None,
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1322,7 +1326,7 @@ mod tests {
                     marketing: None,
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1375,7 +1379,7 @@ mod tests {
                     marketing: None,
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1428,7 +1432,7 @@ mod tests {
                     marketing: Some("marketing".to_owned()),
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1481,7 +1485,7 @@ mod tests {
                     marketing: Some("m".to_owned()),
                 },
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert!(
                 matches!(err, ContractError::Std(_)),
@@ -1538,7 +1542,7 @@ mod tests {
                     marketing: Some("".to_owned()),
                 },
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1587,7 +1591,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Url("new_url".to_owned())),
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1636,7 +1640,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Png(PNG_HEADER.into()))),
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1687,7 +1691,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Svg(img.into()))),
             )
-            .unwrap();
+                .unwrap();
 
             assert_eq!(res.messages, vec![]);
 
@@ -1738,7 +1742,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Png(img.into()))),
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert_eq!(err, ContractError::LogoTooBig {});
 
@@ -1786,8 +1790,8 @@ mod tests {
                 std::str::from_utf8(&[b'x'; 6000]).unwrap(),
                 "</svg>",
             ]
-            .concat()
-            .into_bytes();
+                .concat()
+                .into_bytes();
 
             let err = execute(
                 deps.as_mut(),
@@ -1795,7 +1799,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Svg(img.into()))),
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert_eq!(err, ContractError::LogoTooBig {});
 
@@ -1845,7 +1849,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Png(img.into()))),
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert_eq!(err, ContractError::InvalidPngHeader {});
 
@@ -1896,7 +1900,7 @@ mod tests {
                 info,
                 ExecuteMsg::UploadLogo(Logo::Embedded(EmbeddedLogo::Svg(img.into()))),
             )
-            .unwrap_err();
+                .unwrap_err();
 
             assert_eq!(err, ContractError::InvalidXmlPreamble {});
 
