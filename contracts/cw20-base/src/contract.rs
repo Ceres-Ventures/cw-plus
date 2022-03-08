@@ -22,7 +22,7 @@ use crate::state::{BALANCES, LOGO, MARKETING_INFO, MinterData, TOKEN_INFO, Token
 
 // version info for migration info
 const CONTRACT_NAME: &str = "ceres.ventures:cw20-base";
-const CONTRACT_VERSION: &str = "0.1.0";
+const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 const LOGO_SIZE_CAP: usize = 5 * 1024;
 
@@ -174,7 +174,7 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMessage) -> Result<Respons
     let storage_version: Version = get_contract_version(deps.storage)?.version.parse()?;
 
     if version <= storage_version {
-        return Err(ContractError::SemVer("invalid contract version".to_string()));
+        return Err(ContractError::SemVer(format!("invalid contract version {} <= {}", version, storage_version)));
     }
 
     // set the new version
